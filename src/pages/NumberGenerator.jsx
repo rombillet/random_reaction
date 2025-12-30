@@ -90,18 +90,20 @@ export default function NumberGenerator() {
 
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-10">
-      <header className="flex items-center justify-between">
-        <div>
-          <p className="text-xs uppercase tracking-[0.25em] text-ink/60">Number tool</p>
-          <h1 className="font-display text-3xl text-ink sm:text-4xl">Number Generator</h1>
-        </div>
-        <Link
-          to="/"
-          className="rounded-full border border-ink/10 bg-white/70 px-3 py-1.5 text-xs font-semibold text-ink/70 transition hover:border-ink/30 hover:text-ink"
-        >
-          Back
-        </Link>
-      </header>
+      {!isActive && (
+        <header className="flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.25em] text-ink/60">Number tool</p>
+            <h1 className="font-display text-3xl text-ink sm:text-4xl">Number Generator</h1>
+          </div>
+          <Link
+            to="/"
+            className="rounded-full border border-ink/10 bg-white/70 px-3 py-1.5 text-xs font-semibold text-ink/70 transition hover:border-ink/30 hover:text-ink"
+          >
+            Back
+          </Link>
+        </header>
+      )}
 
       {!isActive && !isFinished && (
         <section className="rounded-3xl border border-ink/10 bg-white/80 p-6 shadow-sm sm:p-8">
@@ -194,18 +196,18 @@ export default function NumberGenerator() {
       )}
 
       {isActive && (
-        <section className="relative flex min-h-[70vh] flex-col items-center justify-center rounded-3xl border border-ink/10 bg-white/80 p-4 shadow-sm sm:p-6">
+        <section className="fixed inset-0 z-10 flex min-h-screen flex-col items-center justify-center bg-mist px-4">
           <button
             type="button"
             onClick={stopSession}
-            className="absolute right-4 top-4 rounded-full border border-ink/20 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70 transition hover:border-ink/40 hover:text-ink"
+            className="absolute right-4 top-4 rounded-full border border-ink/20 bg-white/90 px-3 py-1 text-xs font-semibold text-ink/70 transition hover:border-ink/40 hover:text-ink"
           >
             Stop / Exit
           </button>
           <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Now playing</p>
           <div
             key={currentNumber}
-            className="mt-6 font-display text-[clamp(6rem,28vw,16rem)] leading-none text-ink animate-number-pop"
+            className="mt-4 font-display text-[clamp(9rem,60vw,26rem)] leading-none text-ink animate-number-pop"
           >
             {currentNumber}
           </div>
