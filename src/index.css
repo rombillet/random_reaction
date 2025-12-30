@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #0f172a;
+  background: #f7f7f2;
+}
+
+body {
+  min-height: 100vh;
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(245, 158, 11, 0.12), transparent 60%),
+    radial-gradient(900px 500px at 90% 20%, rgba(22, 163, 74, 0.1), transparent 65%),
+    linear-gradient(180deg, #f7f7f2 0%, #f1f0e8 100%);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
