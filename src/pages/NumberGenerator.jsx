@@ -196,7 +196,7 @@ export default function NumberGenerator() {
       )}
 
       {isActive && (
-        <section className="fixed inset-0 z-10 flex min-h-screen flex-col items-center justify-center bg-mist px-4">
+        <section className="fixed inset-0 z-10 flex min-h-screen flex-col items-center justify-center bg-mist px-3">
           <button
             type="button"
             onClick={stopSession}
@@ -204,14 +204,16 @@ export default function NumberGenerator() {
           >
             Stop / Exit
           </button>
-          <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Now playing</p>
+          <p className="absolute left-4 top-4 text-xs uppercase tracking-[0.3em] text-ink/50">
+            Now playing
+          </p>
           <div
             key={currentNumber}
-            className="mt-4 font-display text-[clamp(9rem,60vw,26rem)] leading-none text-ink animate-number-pop"
+            className="font-display text-[min(90vw,90vh)] leading-none text-ink animate-number-pop"
           >
             {currentNumber}
           </div>
-          <p className="mt-4 text-sm text-ink/60">
+          <p className="absolute bottom-5 text-sm text-ink/60">
             Time left: {Math.floor(remainingSeconds / 60)}m {remainingSeconds % 60}s
           </p>
         </section>
