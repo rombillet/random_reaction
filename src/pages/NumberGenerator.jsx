@@ -194,7 +194,7 @@ export default function NumberGenerator() {
       )}
 
       {isActive && (
-        <section className="relative flex min-h-[60vh] flex-col items-center justify-center rounded-3xl border border-ink/10 bg-white/80 p-6 shadow-sm">
+        <section className="relative flex min-h-[70vh] flex-col items-center justify-center rounded-3xl border border-ink/10 bg-white/80 p-4 shadow-sm sm:p-6">
           <button
             type="button"
             onClick={stopSession}
@@ -205,7 +205,7 @@ export default function NumberGenerator() {
           <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Now playing</p>
           <div
             key={currentNumber}
-            className="mt-6 font-display text-[clamp(4.5rem,18vw,10rem)] leading-none text-ink animate-number-pop"
+            className="mt-6 font-display text-[clamp(6rem,28vw,16rem)] leading-none text-ink animate-number-pop"
           >
             {currentNumber}
           </div>
