@@ -204,18 +204,18 @@ export default function NumberGenerator() {
           >
             Stop / Exit
           </button>
-          <p className="absolute left-4 top-4 text-xs uppercase tracking-[0.3em] text-ink/50">
-            Now playing
-          </p>
+          <div className="absolute left-4 top-4 space-y-2">
+            <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Now playing</p>
+            <p className="rounded-full border border-ink/10 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70 shadow-sm">
+              Time left: {Math.floor(remainingSeconds / 60)}m {remainingSeconds % 60}s
+            </p>
+          </div>
           <div
             key={currentNumber}
             className="font-display text-[min(90vw,90vh)] leading-none text-ink animate-number-pop"
           >
             {currentNumber}
           </div>
-          <p className="absolute bottom-5 text-sm text-ink/60">
-            Time left: {Math.floor(remainingSeconds / 60)}m {remainingSeconds % 60}s
-          </p>
         </section>
       )}
 
