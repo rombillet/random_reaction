@@ -4,14 +4,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-        display: ['"DM Serif Display"', 'serif'],
+        sans: ['"Manrope"', 'system-ui', 'sans-serif'],
+        display: ['"Manrope"', 'system-ui', 'sans-serif'],
       },
       colors: {
-        ink: '#0f172a',
-        mist: '#f7f7f2',
-        accent: '#16a34a',
-        sun: '#f59e0b',
+        ink: '#0b0b0f',
+        mist: '#f5f5f7',
+        cloud: '#ffffff',
+        smoke: '#e5e5ea',
+        chrome: '#1c1c1e',
       },
       keyframes: {
         fadeInUp: {

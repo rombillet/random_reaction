@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-function clampNumber(value, fallback) {
+function parseNumber(value) {
+  if (value === '' || value === null || value === undefined) return null;
   const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
+  return Number.isFinite(parsed) ? parsed : null;
 }
 
 function getRandomInt(min, max) {
@@ -13,11 +14,11 @@ function getRandomInt(min, max) {
 }
 
 export default function NumberGenerator() {
-  const [minValue, setMinValue] = useState(1);
-  const [maxValue, setMaxValue] = useState(99);
-  const [minutes, setMinutes] = useState(0);
-  const [seconds, setSeconds] = useState(30);
-  const [intervalSeconds, setIntervalSeconds] = useState(3);
+  const [minValue, setMinValue] = useState('1');
+  const [maxValue, setMaxValue] = useState('99');
+  const [minutes, setMinutes] = useState('0');
+  const [seconds, setSeconds] = useState('30');
+  const [intervalSeconds, setIntervalSeconds] = useState('3');
   const [currentNumber, setCurrentNumber] = useState(null);
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
@@ -27,17 +28,23 @@ export default function NumberGenerator() {
   const countdownRef = useRef(null);
   const finishRef = useRef(null);
 
-  const totalSeconds = useMemo(
-    () => Math.max(0, clampNumber(minutes, 0) * 60 + clampNumber(seconds, 0)),
-    [minutes, seconds]
-  );
+  const totalSeconds = useMemo(() => {
+    const parsedMinutes = parseNumber(minutes) ?? 0;
+    const parsedSeconds = parseNumber(seconds) ?? 0;
+    return Math.max(0, parsedMinutes * 60 + parsedSeconds);
+  }, [minutes, seconds]);
+
+  const parsedMin = parseNumber(minValue);
+  const parsedMax = parseNumber(maxValue);
+  const parsedInterval = parseNumber(intervalSeconds);
 
   const isValid =
     totalSeconds > 0 &&
-    intervalSeconds > 0 &&
-    Number.isFinite(minValue) &&
-    Number.isFinite(maxValue) &&
-    minValue <= maxValue;
+    parsedInterval !== null &&
+    parsedInterval > 0 &&
+    parsedMin !== null &&
+    parsedMax !== null &&
+    parsedMin <= parsedMax;
 
   const clearTimers = () => {
     if (intervalRef.current) {
@@ -56,16 +63,17 @@ export default function NumberGenerator() {
 
   const startSession = () => {
     if (!isValid) return;
+    if (parsedMin === null || parsedMax === null || parsedInterval === null) return;
 
     clearTimers();
     setIsFinished(false);
     setIsActive(true);
     setRemainingSeconds(totalSeconds);
-    setCurrentNumber(getRandomInt(minValue, maxValue));
+    setCurrentNumber(getRandomInt(parsedMin, parsedMax));
 
     intervalRef.current = setInterval(() => {
-      setCurrentNumber(getRandomInt(minValue, maxValue));
-    }, intervalSeconds * 1000);
+      setCurrentNumber(getRandomInt(parsedMin, parsedMax));
+    }, parsedInterval * 1000);
 
     countdownRef.current = setInterval(() => {
       setRemainingSeconds((prev) => Math.max(0, prev - 1));
@@ -93,12 +101,14 @@ export default function NumberGenerator() {
       {!isActive && (
         <header className="flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-ink/60">Number tool</p>
-            <h1 className="font-display text-3xl text-ink sm:text-4xl">Number Generator</h1>
+            <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Number tool</p>
+            <h1 className="font-display text-3xl font-semibold text-ink sm:text-4xl">
+              Number Generator
+            </h1>
           </div>
           <Link
             to="/"
-            className="rounded-full border border-ink/10 bg-white/70 px-3 py-1.5 text-xs font-semibold text-ink/70 transition hover:border-ink/30 hover:text-ink"
+            className="rounded-full border border-ink/10 bg-white/80 px-3 py-1.5 text-xs font-semibold text-ink/60 shadow-sm transition hover:border-ink/30 hover:text-ink"
           >
             Back
           </Link>
@@ -106,11 +116,11 @@ export default function NumberGenerator() {
       )}
 
       {!isActive && !isFinished && (
-        <section className="rounded-3xl border border-ink/10 bg-white/80 p-6 shadow-sm sm:p-8">
+        <section className="rounded-[32px] border border-ink/10 bg-white/90 p-6 shadow-[0_10px_40px_rgba(0,0,0,0.08)] sm:p-8">
           <div className="grid gap-6">
             <div>
               <h2 className="text-lg font-semibold text-ink">Setup</h2>
-              <p className="text-sm text-ink/60">
+              <p className="text-sm text-ink/55">
                 Define the range, timing, and interval for the session.
               </p>
             </div>
@@ -121,8 +131,8 @@ export default function NumberGenerator() {
                 <input
                   type="number"
                   value={minValue}
-                  onChange={(event) => setMinValue(clampNumber(event.target.value, 0))}
-                  className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
+                  onChange={(event) => setMinValue(event.target.value)}
+                  className="w-full rounded-2xl border border-ink/10 bg-mist px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
                 />
               </label>
 
@@ -131,8 +141,8 @@ export default function NumberGenerator() {
                 <input
                   type="number"
                   value={maxValue}
-                  onChange={(event) => setMaxValue(clampNumber(event.target.value, 0))}
-                  className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
+                  onChange={(event) => setMaxValue(event.target.value)}
+                  className="w-full rounded-2xl border border-ink/10 bg-mist px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
                 />
               </label>
             </div>
@@ -147,8 +157,15 @@ export default function NumberGenerator() {
                       type="number"
                       min="0"
                       value={minutes}
-                      onChange={(event) => setMinutes(clampNumber(event.target.value, 0))}
-                      className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
+                      onChange={(event) => {
+                        const next = event.target.value;
+                        if (next === '') {
+                          setMinutes('');
+                        } else {
+                          setMinutes(String(Math.max(0, Number(next))));
+                        }
+                      }}
+                      className="w-full rounded-2xl border border-ink/10 bg-mist px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
                     />
                   </label>
                   <label className="space-y-1">
@@ -158,10 +175,16 @@ export default function NumberGenerator() {
                       min="0"
                       max="59"
                       value={seconds}
-                      onChange={(event) =>
-                        setSeconds(Math.min(59, clampNumber(event.target.value, 0)))
-                      }
-                      className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
+                      onChange={(event) => {
+                        const next = event.target.value;
+                        if (next === '') {
+                          setSeconds('');
+                        } else {
+                          const numeric = Math.max(0, Number(next));
+                          setSeconds(String(Math.min(59, numeric)));
+                        }
+                      }}
+                      className="w-full rounded-2xl border border-ink/10 bg-mist px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
                     />
                   </label>
                 </div>
@@ -174,8 +197,15 @@ export default function NumberGenerator() {
                   min="1"
                   step="1"
                   value={intervalSeconds}
-                  onChange={(event) => setIntervalSeconds(clampNumber(event.target.value, 1))}
-                  className="w-full rounded-2xl border border-ink/10 bg-white px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
+                  onChange={(event) => {
+                    const next = event.target.value;
+                    if (next === '') {
+                      setIntervalSeconds('');
+                    } else {
+                      setIntervalSeconds(String(Math.max(1, Number(next))));
+                    }
+                  }}
+                  className="w-full rounded-2xl border border-ink/10 bg-mist px-4 py-3 text-base text-ink shadow-sm focus:border-ink/30 focus:outline-none"
                 />
                 <p className="text-xs text-ink/50">
                   A new number will appear at each interval.
@@ -187,7 +217,7 @@ export default function NumberGenerator() {
               type="button"
               onClick={startSession}
               disabled={!isValid}
-              className="w-full rounded-2xl bg-ink px-5 py-4 text-base font-semibold text-mist shadow-lg shadow-ink/20 transition hover:-translate-y-0.5 hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
+              className="w-full rounded-2xl bg-ink px-5 py-4 text-base font-semibold text-mist shadow-[0_12px_30px_rgba(11,11,15,0.25)] transition hover:-translate-y-0.5 hover:bg-ink/90 disabled:cursor-not-allowed disabled:bg-ink/40"
             >
               Start
             </button>
@@ -200,13 +230,13 @@ export default function NumberGenerator() {
           <button
             type="button"
             onClick={stopSession}
-            className="absolute right-4 top-4 rounded-full border border-ink/20 bg-white/90 px-3 py-1 text-xs font-semibold text-ink/70 transition hover:border-ink/40 hover:text-ink"
+            className="absolute right-4 top-4 rounded-full border border-ink/10 bg-white/90 px-3 py-1 text-xs font-semibold text-ink/60 shadow-sm transition hover:border-ink/30 hover:text-ink"
           >
             Stop / Exit
           </button>
           <div className="absolute left-4 top-4 space-y-2">
-            <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Now playing</p>
-            <p className="rounded-full border border-ink/10 bg-white/80 px-3 py-1 text-xs font-semibold text-ink/70 shadow-sm">
+            <p className="text-xs uppercase tracking-[0.3em] text-ink/45">Now playing</p>
+            <p className="rounded-full border border-ink/10 bg-white/90 px-3 py-1 text-xs font-semibold text-ink/60 shadow-sm">
               Time left: {Math.floor(remainingSeconds / 60)}m {remainingSeconds % 60}s
             </p>
           </div>
@@ -220,7 +250,7 @@ export default function NumberGenerator() {
       )}
 
       {isFinished && (
-        <section className="rounded-3xl border border-ink/10 bg-white/80 p-6 text-center shadow-sm sm:p-8">
+        <section className="rounded-[32px] border border-ink/10 bg-white/90 p-6 text-center shadow-[0_10px_40px_rgba(0,0,0,0.08)] sm:p-8">
           <p className="text-xs uppercase tracking-[0.3em] text-ink/50">Session complete</p>
           <h2 className="mt-3 text-2xl font-semibold text-ink">Finished</h2>
           <p className="mt-2 text-sm text-ink/60">Ready for another round?</p>
@@ -230,7 +260,7 @@ export default function NumberGenerator() {
               setIsFinished(false);
               setCurrentNumber(null);
             }}
-            className="mt-6 w-full rounded-2xl bg-ink px-5 py-4 text-base font-semibold text-mist shadow-lg shadow-ink/20 transition hover:-translate-y-0.5 hover:bg-ink/90"
+            className="mt-6 w-full rounded-2xl bg-ink px-5 py-4 text-base font-semibold text-mist shadow-[0_12px_30px_rgba(11,11,15,0.25)] transition hover:-translate-y-0.5 hover:bg-ink/90"
           >
             Restart
           </button>
